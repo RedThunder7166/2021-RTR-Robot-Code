@@ -16,6 +16,7 @@ import frc.robot.subsystems.Stage12ConveyorSubsystem;
 import frc.robot.subsystems.Stage3ConveyorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.AdjustTurretSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,6 +47,7 @@ public class RobotContainer {
   private final Stage3ConveyorSubsystem m_stage3conveyorsubsystem = new Stage3ConveyorSubsystem();
   private final AdjustTurretSubsystem m_adjustturretsubsystem = new AdjustTurretSubsystem();
   private final FlywheelSubsystem m_flywheelsubsystem = new FlywheelSubsystem();
+  private final LEDSubsystem m_ledsubystem = new LEDSubsystem();
   
   //Chooser for autonomous commands
   Command m_autonomousCommand;
@@ -99,7 +101,7 @@ public class RobotContainer {
   public RobotContainer() {
     configureButtonBindings();
 
-    m_drivesubsystem.setDefaultCommand(new DriveCommand(m_drivesubsystem, 
+    m_drivesubsystem.setDefaultCommand(new DriveCommand(m_drivesubsystem, m_ledsubystem,
                                                           () -> driverController.getRawAxis(Constants.DRIVE_RIGHT_TRIGGER), 
                                                           () -> driverController.getRawAxis(Constants.DRIVE_LEFT_TRIGGER),
                                                           () -> driverController.getRawAxis(Constants.DRIVE_RIGHT_X_AXIS),

@@ -21,6 +21,8 @@ import org.photonvision.PhotonUtils;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -59,6 +61,28 @@ public class DriveSubsystem extends SubsystemBase {
 
   double cell0;
   double cell1;
+
+  //Characterization - Path Weaver
+
+  public static final double ksVolts = 0.14;
+  public static final double kvVoltSecondsPerMeter = 0.0861;
+  public static final double kavoltSecondsSquaredPerMeter = 0.00849;
+  public static final double kPDriveVel = 0.379;
+  public static final double kTrackWidthMeters = 0.61;
+  public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
+  public static final double kMaxSpeedMetersPerSecond = 2;
+  public static final double kMaxAccelerationMetersPerSecondSquared = 2;
+  public static final double kRamseteB = 2;
+  public static final double kRamseteZeta = 0.7;
+
+
+
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    leftEncoder.setVelocityConversionFactor(Constants.ENCODER_CONVERSION_VELOCITY_METERS);
+    rightEncoder.setVelocityConversionFactor(Constants.ENCODER_CONVERSION_VELOCITY_METERS);
+    return new DifferentialDriveWheelSpeeds(leftEncoder.getVelocity(), rightEncoder.getVelocity());
+  }
+
   public DriveSubsystem() {
   }
 
@@ -76,16 +100,19 @@ public class DriveSubsystem extends SubsystemBase {
     double swivel = 0.45;  //How fast the bot pivots in place
     if(Math.abs(stop) > 0.5){
       setBrakeMode();
+   
     } else if(speed >= 0.10 || speed <= -0.10){
         setCoastMode();
-
+   
         moving = driveSpeed * speed;
         if(Math.abs(turn) > 0.10){
           turning = rotateSpeed * turn;
+     
         }
       } else if(Math.abs(turn) > 0.10){
           setCoastMode();
           turning = swivel * Math.pow(turn, 3);
+       
       }
 
     differentialRocketLeagueDrive.arcadeDrive(moving, turning);
@@ -106,13 +133,17 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.setIdleMode(IdleMode.kCoast);
   }
 
+  //Characterization - Path Weaver
+
+
+
   public double getleftEncoder(){
-    leftEncoder.setPositionConversionFactor(Constants.ENCODER_CONVERSION);
+    leftEncoder.setPositionConversionFactor(Constants.ENCODER_CONVERSION_INCHES);
     return leftEncoder.getPosition();
   }
 
   public double getrightEncoder(){
-    rightEncoder.setPositionConversionFactor(Constants.ENCODER_CONVERSION);
+    rightEncoder.setPositionConversionFactor(Constants.ENCODER_CONVERSION_INCHES);
     return rightEncoder.getPosition();
   }
 
@@ -127,6 +158,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void setLeftMotors(double speed){
     leftGroup.set(speed);
+  }
+
+  public double getRightMotors(){
+    return rightGroup.get();
+  }
+
+  public double getLeftMotors(){
+    return leftGroup.get();
   }
 
   // GYRO

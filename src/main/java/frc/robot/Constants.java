@@ -74,7 +74,18 @@ public final class Constants {
 
     //Encoder Conversion Factor
 
-    public static double ENCODER_CONVERSION = (33.5 / 13.476218); // Encoder units to inches
+    public static double ENCODER_CONVERSION_INCHES = (33.5 / 13.476218); // Encoder units to inches, 2.48586
+    public static double ENCODER_CONVERSION_VELOCITY_METERS = 0.0;
+    public static double ENCODER_CONVERSION_METERS = 26.85;
+
+        // 4096 encoder units per revolution on Spark MAX
+        // Low gear ratio: 12.857
+        // High gear ratio: 6.25
+        // 3" radius = 0.0762 meters
+        // Circumference of drive wheels = 0.47877 meters
+        // Units per meter (native units, low gear) = 109996.15
+        // 109,996.15 / 4096 = 26.85 conversion factor to meters
+
 
 	
 }

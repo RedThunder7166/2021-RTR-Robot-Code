@@ -12,19 +12,23 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class DriveCommand extends CommandBase {
 
   private final DriveSubsystem driveSubsystem;
+  private final LEDSubsystem ledSubsystem;
   private final DoubleSupplier movingForward;
   private final DoubleSupplier movingBackward;
   private final DoubleSupplier turning;
   private final DoubleSupplier stopping;
+  
   /**
    * Creates a new DriveCommand.
    */
-  public DriveCommand(DriveSubsystem subsystem, DoubleSupplier forward, DoubleSupplier backward, DoubleSupplier rotation, DoubleSupplier stop) {
+  public DriveCommand(DriveSubsystem subsystem, LEDSubsystem subsystem2, DoubleSupplier forward, DoubleSupplier backward, DoubleSupplier rotation, DoubleSupplier stop) {
     driveSubsystem = subsystem;
+    ledSubsystem = subsystem2;
     movingForward = forward;
     movingBackward = backward;
     stopping = stop;
@@ -33,6 +37,7 @@ public class DriveCommand extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
 
     addRequirements(subsystem);
+    addRequirements(subsystem2);
   }
 
   // Called when the command is initially scheduled.
@@ -51,6 +56,23 @@ public class DriveCommand extends CommandBase {
       double xMotion = movingForward.getAsDouble() - movingBackward.getAsDouble(); 
 
       driveSubsystem.RocketLeagueDrive(xMotion, turning.getAsDouble(), stopping.getAsDouble());
+
+      if(driveSubsystem.getLeftMotors() > 0 && driveSubsystem.getRightMotors() < 0){ //going forward
+        ledSubsystem.setLEDLeft(.77); //Green
+        ledSubsystem.setLEDRight(.77);
+      } else if(driveSubsystem.getLeftMotors() < 0 && driveSubsystem.getRightMotors() > 0){ //going backward
+        ledSubsystem.setLEDLeft(.65); //Orange
+        ledSubsystem.setLEDRight(.65);
+      } else if (driveSubsystem.getLeftMotors() > 0){
+        ledSubsystem.setLEDLeft(-.11); //Strobe Red
+        ledSubsystem.setLEDRight(-.11);
+      } else if (driveSubsystem.getLeftMotors() <0){
+        ledSubsystem.setLEDLeft(-.09); //Strobe Blue
+        ledSubsystem.setLEDRight(-.09);
+      } else {
+        ledSubsystem.setLEDLeft(-.99); //Rainbow
+        ledSubsystem.setLEDRight(-.99);
+      }
 
 
 

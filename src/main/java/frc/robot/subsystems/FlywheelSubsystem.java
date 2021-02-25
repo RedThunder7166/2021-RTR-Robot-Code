@@ -21,6 +21,8 @@ public class FlywheelSubsystem extends SubsystemBase {
   public TalonFX flyWheelLeft = new TalonFX(Constants.FLYWHEEL_LEFT_CAN);
   PowerDistributionPanel PDP = new PowerDistributionPanel(0);
 
+  DriveSubsystem driveSubsystem;
+
 
   /**
    * Creates a new FlywheelSubsystem.
@@ -31,22 +33,11 @@ public class FlywheelSubsystem extends SubsystemBase {
 
   public void FlyWheelUp(){
 
-    //SmartDashboard.putBoolean("Flywheel status", true);
-    // double startup = .00001;
-    // double flySpeedRight = 0.0;
-    // double flySpeedLeft = 0.0;
-    // while(flyWheelRight.getMotorOutputPercent() > -0.60 && flyWheelLeft.getMotorOutputPercent() < 0.60){
-    //   flySpeedRight += startup;
-    //   flySpeedLeft -= startup;
-
-    //   flyWheelRight.set(ControlMode.PercentOutput, flySpeedRight);
-    //   flyWheelLeft.set(ControlMode.PercentOutput, flySpeedLeft);
-    // }
-
     flyWheelRight.set(ControlMode.PercentOutput, 0.60);
     flyWheelLeft.set(ControlMode.PercentOutput, -0.60);
     SmartDashboard.putNumber("Left Flywheel", PDP.getCurrent(12));
     SmartDashboard.putNumber("Right Flywheel", PDP.getCurrent(13));
+
     
   }
 

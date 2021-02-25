@@ -53,7 +53,7 @@ public class GalacticSequential extends SequentialCommandGroup {
       new GAL_Turn1(drive, turn1),
         new PrintCommand("GAL_Turn has ended"),
         new PrintCommand("Completed turn to the " + turn1)
-      //Rotate to cell 0
+      //Rotate to cell 1
       //Start conveyor
       //Drive to cell 1
       //Stop conveyor
