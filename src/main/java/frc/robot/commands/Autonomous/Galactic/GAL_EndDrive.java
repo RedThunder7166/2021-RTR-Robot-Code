@@ -40,7 +40,7 @@ public class GAL_EndDrive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(driveSubsystem.getleftEncoder() < 24){
+    if(driveSubsystem.getleftEncoder() < 35){
       return false;
     } else{
       return true;

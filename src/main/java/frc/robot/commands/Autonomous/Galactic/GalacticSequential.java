@@ -10,7 +10,6 @@ package frc.robot.commands.Autonomous.Galactic;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.Stage12ConveyorSubsystem;
@@ -22,7 +21,7 @@ public class GalacticSequential extends SequentialCommandGroup {
   /**
    * Creates a new GalacticSequential.
    */
-  public GalacticSequential(DriveSubsystem drive, Stage12ConveyorSubsystem conveyor, PneumaticSubsystem pneumatic, String turn1, String turn2, double distance) {
+  public GalacticSequential(DriveSubsystem drive, Stage12ConveyorSubsystem conveyor, PneumaticSubsystem pneumatic, int turn1, int turn2, double distance) {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
     super(
@@ -36,29 +35,37 @@ public class GalacticSequential extends SequentialCommandGroup {
         new PrintCommand("Executing GAL_ConveyorON"),
       new GAL_ConveyorON(conveyor),
         new PrintCommand("Executing GAL_Drive"),
-        new PrintCommand("Driving " + drive.getGalDistance() + " inches to target"),
-      new GAL_Drive(drive), // Drive to cell0
+        new PrintCommand("Driving " + drive.getGalDistance() + " inches to cell0"),
+      new GAL_Drive(drive), // Drive to within 24 inches of cell0
       new InstantCommand(() -> drive.resetEncoders()), // Reset encoders to use in next step
         new PrintCommand("Executing GAL_EndDrive"),
-      new GAL_EndDrive(drive),
+      new GAL_EndDrive(drive), //drives 24 inches
         new PrintCommand("Executing GAL_Orient"),
       new GAL_Orient(drive), //Orient zero degrees
-        new PrintCommand("Executing WAIT(2)"),
-      new WaitCommand(2),
         new PrintCommand("Executing GAL_ConveyorOFF"),
       new GAL_ConveyorOFF(conveyor),
-      //Cell1
         new PrintCommand("Executing GAL_Turn"),
         new PrintCommand("Turning to the " + turn1),
       new GAL_Turn1(drive, turn1),
         new PrintCommand("GAL_Turn has ended"),
-        new PrintCommand("Completed turn to the " + turn1)
-      //Rotate to cell 1
-      //Start conveyor
-      //Drive to cell 1
-      //Stop conveyor
-      //Rotate to zero degrees
-      //Turn based on turn2
+        new PrintCommand("Completed turn to the " + turn1),
+      //cell1
+      new GAL_Pivot(drive, turn1, turn2), // Turn to cell1
+        new PrintCommand("Executing GAL_ConveyorON cell1"),
+      new GAL_ConveyorON(conveyor),
+        new PrintCommand("Executing GAL_Drive cell1"),
+        new PrintCommand("Driving " + drive.getGalDistance() + " inches to cell1"),
+      new GAL_Drive(drive), // Drive to within 24 inches of cell0
+      new InstantCommand(() -> drive.resetEncoders()), // Reset encoders to use in next step
+        new PrintCommand("Executing GAL_EndDrive cell1"),
+      new GAL_EndDrive(drive), //drives 24 inches
+        new PrintCommand("Executing GAL_Orient cell1"),
+      new GAL_Orient(drive),
+        new PrintCommand("Executing GAL_ConveyorOFF"),
+      new GAL_ConveyorOFF(conveyor),
+        new PrintCommand("Executing GAL_Turn cell1"),
+        new PrintCommand("Turning to the " + turn2),
+      new GAL_Turn2(drive, turn2) 
 
       //Rotate to object
       //Start conveyor

@@ -1,43 +1,39 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.Autonomous.Galactic;
+
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class GAL_Turn1 extends CommandBase {
+public class GAL_Turn2 extends CommandBase {
   DriveSubsystem drivesubsystem;
-  int turn1;
-  /**
-   * Creates a new GAL_Turn.
-   */
-  public GAL_Turn1(DriveSubsystem subsystem, int Turn1) {
+  int turn2;
+  /** Creates a new GAL_Turn2. */
+  public GAL_Turn2(DriveSubsystem subsystem, int Turn2) {
+
     drivesubsystem = subsystem;
-    Turn1 = turn1;
+    turn2 = Turn2;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivesubsystem.galTurn1(turn1);
+    drivesubsystem.galTurn2(turn2);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
@@ -49,7 +45,5 @@ public class GAL_Turn1 extends CommandBase {
       drivesubsystem.setLeftMotors(0.0);
       return true;
     }
-
-
   }
 }

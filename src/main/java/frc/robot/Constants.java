@@ -75,8 +75,8 @@ public final class Constants {
     //Encoder Conversion Factor
 
     public static double ENCODER_CONVERSION_INCHES = (33.5 / 13.476218); // Encoder units to inches, 2.48586
-    public static double ENCODER_CONVERSION_VELOCITY_METERS = 0.0;
-    public static double ENCODER_CONVERSION_METERS = 26.85;
+    public static double VELOCITY_CONVERSION_METERS = 0.0;
+    public static double POSITION_CONVERSION_METERS = 26.85;
 
         // 4096 encoder units per revolution on Spark MAX
         // Low gear ratio: 12.857

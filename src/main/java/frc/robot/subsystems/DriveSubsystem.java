@@ -21,8 +21,6 @@ import org.photonvision.PhotonUtils;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -62,28 +60,8 @@ public class DriveSubsystem extends SubsystemBase {
   double cell0;
   double cell1;
 
-  //Characterization - Path Weaver
-
-  public static final double ksVolts = 0.14;
-  public static final double kvVoltSecondsPerMeter = 0.0861;
-  public static final double kavoltSecondsSquaredPerMeter = 0.00849;
-  public static final double kPDriveVel = 0.379;
-  public static final double kTrackWidthMeters = 0.61;
-  public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidthMeters);
-  public static final double kMaxSpeedMetersPerSecond = 2;
-  public static final double kMaxAccelerationMetersPerSecondSquared = 2;
-  public static final double kRamseteB = 2;
-  public static final double kRamseteZeta = 0.7;
-
-
-
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    leftEncoder.setVelocityConversionFactor(Constants.ENCODER_CONVERSION_VELOCITY_METERS);
-    rightEncoder.setVelocityConversionFactor(Constants.ENCODER_CONVERSION_VELOCITY_METERS);
-    return new DifferentialDriveWheelSpeeds(leftEncoder.getVelocity(), rightEncoder.getVelocity());
-  }
-
   public DriveSubsystem() {
+    
   }
 
   // FORWARD: RIGHT -
@@ -133,9 +111,6 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.setIdleMode(IdleMode.kCoast);
   }
 
-  //Characterization - Path Weaver
-
-
 
   public double getleftEncoder(){
     leftEncoder.setPositionConversionFactor(Constants.ENCODER_CONVERSION_INCHES);
@@ -178,6 +153,7 @@ public class DriveSubsystem extends SubsystemBase {
     return gyro.getAngle();
   }
 
+
   //AUTONOMOUS COMMAND METHODS
 
   public void barrelRacing(){
@@ -186,8 +162,8 @@ public class DriveSubsystem extends SubsystemBase {
 
 
 
-  public String galacticTurn1(){
-    String turn1 = "ERROR"; 
+  public int galacticTurn1(){
+    int turn1 = 0;; 
     var result = camera.getLatestResult();
     List<PhotonTrackedTarget> targets = result.getTargets();
     if(result.hasTargets()){
@@ -195,22 +171,20 @@ public class DriveSubsystem extends SubsystemBase {
         double cell0 = targets.get(0).getYaw();
         double cell1 = targets.get(1).getYaw();
         if(cell1 > cell0 ){  //Cell1 is to the right of cell0
-          turn1 = "RIGHT";  // true = turn right
+          turn1 = 1;  // true = turn right
         } else if(cell1 < cell0){ // cell1 is to the left of cell0
-          turn1 = "LEFT"; // false = turn left
-        } else{
-          turn1 = "ERROR";
-        }
+          turn1 = 1; // false = turn left
+        } 
       }
-    } else{
-      turn1 = "ERROR";
-    }
-    SmartDashboard.putString("Turn 1", turn1);
+    } 
+    
+      SmartDashboard.putNumber("Turn 1", turn1);
+    
     return turn1;
   }
 
-  public String galacticTurn2(){
-    String turn2 = "ERROR";
+  public int galacticTurn2(){
+    int turn2 = 0;
     var result = camera.getLatestResult();
     List<PhotonTrackedTarget> targets = result.getTargets();
     if(result.hasTargets()){
@@ -218,19 +192,19 @@ public class DriveSubsystem extends SubsystemBase {
         double cell1 = targets.get(1).getYaw();
         double cell2 = targets.get(2).getYaw();
         if(cell2 > cell1){ //cell2 is to the right of cell1
-          turn2 = "RIGHT";  // true = turn right
+          turn2 = 1;  // true = turn right
         } else if(cell2 < cell1){ //cell2 is to the left cell1
-          turn2 = "LEFT"; // false = turn left
+          turn2 = 0; // false = turn left
         } 
-      } else{
-        turn2 = "ERROR";
-      }
+      } 
     }
-    SmartDashboard.putString("Turn 2", turn2);
+
+      SmartDashboard.putNumber("Turn 2", turn2);
+    
     return turn2;
   }
 
-  public void galPivot(String turn1, String turn2){
+  public void galPivot(int turn1, int turn2){
     double rotationSpeed = 0.0;
     var result = camera.getLatestResult();
     List<PhotonTrackedTarget> targets = result.getTargets();
@@ -285,8 +259,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void galDrive(){
-    double kp = 1;
-    double error = -gyro.getRate();
     double leftspeed;
     double rightspeed;
     var result = camera.getLatestResult();
@@ -312,74 +284,49 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void galEndDrive(){
-    double distance = 24;
-    if(getleftEncoder() < distance){
       setRightMotors(-.20);
       setLeftMotors(.20);
-    } else{
-      setRightMotors(0.0);
-      setLeftMotors(0.0);
-    }
   }
 
-  public void galTurn1(String turn1){
+  public void galTurn1(int turn1){
     double turnPower;
     double currentAngle = getGyro();
-    double kp = .50;
-    double rightAngle = 45;
-    double leftAngle = -45;
-    if(turn1 == "RIGHT"){
-      turnPower = kp * (currentAngle - rightAngle);
+    double kp = .004;
+    double kv = .05;
+    double targetAngle = 40;
+
+    if(turn1 == 1){
+      turnPower = -1 * kp * (currentAngle - targetAngle) + kv; //Returns positive
+      System.out.println("Turning RIGHT");
+    } else {
+      turnPower = kp * (currentAngle - targetAngle) - kv; //Returns negative
+      System.out.println("Turning Left");
+      System.out.println("turn1: " + turn1);
+    }
+    setLeftMotors(turnPower);
+    setRightMotors(turnPower);
     }
 
-    // if(turn1 == "RIGHT"){
-    //   if(error > 45){ //The bot is too far right, turn left
-    //     speed = 0.50*Math.sin((Math.PI/180)*getGyro()) + .05; // outputs a positive speed, need a negative to turn left
-    //   } else if (error < 45){
-    //     speed = 0.50*Math.sin((Math.PI/180)*getGyro()) - .05;
-    //   } else{
-    //     speed = 0.0;
-    //   }
-    // } else if(turn1 == "LEFT"){
-    //   if(error > -45){ //The bot is too far right, turn left
-    //     speed = 0.50*Math.sin((Math.PI/180)*getGyro()) + .05; // outputs a positive speed, need a negative to turn left
-    //   } else if (error < -45){
-    //     speed = 0.50*Math.sin((Math.PI/180)*getGyro()) - .05;
-    //   } else{
-    //     speed = 0.0;
-    //   }
-    // } else{
-    //   speed = 0.0;
-    // }
-    // setLeftMotors(-speed);
-    // setRightMotors(-speed);
+  
+
+  public void galTurn2(int turn2){
+    double turnPower;
+    double currentAngle = getGyro();
+    double kp = .004;
+    double kv = .05;    
+    double targetAngle = 40;
+
+    if(turn2 == 1){
+      turnPower = -1 * kp * (currentAngle - targetAngle) + kv; 
+      System.out.println("Turning RIGHT");
+    } else {
+      turnPower = kp * (currentAngle - targetAngle) - kv; 
+      System.out.println("Turning LEFT");
+    }
+ 
+    setLeftMotors(turnPower);
+    setRightMotors(turnPower);
   }
-
-  public void galTurn2(String turn2){
-    double speed;
-    double error = getGyro();
-    if(turn2 == "RIGHT"){
-      if(error > 45){ //The bot is too far right, turn left
-        speed = 0.25*Math.sin((Math.PI/180)*getGyro()) + .05; // outputs a positive speed, need a negative to turn left
-      } else if (error < 45){
-        speed = 0.25*Math.sin((Math.PI/180)*getGyro()) - .05;
-      } else{
-        speed = 0.0;
-      }
-    } else if(turn2 == "LEFT"){
-      if(error > -45){ //The bot is too far right, turn left
-        speed = 0.25*Math.sin((Math.PI/180)*getGyro()) + .05; // outputs a positive speed, need a negative to turn left
-      } else if (error < -45){
-        speed = 0.25*Math.sin((Math.PI/180)*getGyro()) - .05;
-      } else{
-        speed = 0.0;
-      }
-    } else{
-      speed = 0.0;
-    }
-    setLeftMotors(-speed);
-    setRightMotors(-speed);
-  }  
   
 
        

@@ -13,12 +13,12 @@ import frc.robot.subsystems.DriveSubsystem;
 public class GAL_Pivot extends CommandBase {
 
   DriveSubsystem driveSubsystem;
-  String turn1;
-  String turn2;
+  int turn1;
+  int turn2;
   /**
    * Creates a new GAL_Pivot.
    */
-  public GAL_Pivot(DriveSubsystem subsystem, String Turn1, String Turn2) {
+  public GAL_Pivot(DriveSubsystem subsystem, int Turn1, int Turn2) {
     Turn1 = turn1;
     Turn2 = turn2;
     driveSubsystem = subsystem;
